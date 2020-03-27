@@ -1,0 +1,35 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: phone-ui
+  name: phone-ui
+spec:
+  replicas: 5
+  revisionHistoryLimit: 2
+  selector:
+    app: phone-ui
+  strategy:
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: phone-ui
+    spec:
+      containers:
+      - image: quay.io/redhatdemo/2020-phone-ui:latest
+        imagePullPolicy: Always
+        name: phone-ui
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 1000Mi
+          requests:
+            cpu: 500m
+            memory: 500Mi
+  triggers:
+  - type: ConfigChange

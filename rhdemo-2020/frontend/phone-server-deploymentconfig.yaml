@@ -1,0 +1,63 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  labels:
+    app: phone-server
+    application: phone-server
+  name: phone-server
+spec:
+  replicas: 5
+  selector:
+    deploymentconfig: phone-server
+  strategy:
+    type: Rolling
+  template:
+    metadata:
+      labels:
+        app: phone-server
+        deploymentconfig: phone-server
+    spec:
+      containers:
+      - env:
+        - name: IP
+          value: 0.0.0.0
+        - name: PORT
+          value: "8080"
+        envFrom:
+        - secretRef:
+            name: 2020-demo-common
+        - configMapRef:
+            name: 2020-demo-common
+        image: quay.io/redhatdemo/2020-phone-server:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          initialDelaySeconds: 15
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 5
+        name: phone-server
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        readinessProbe:
+          initialDelaySeconds: 15
+          tcpSocket:
+            port: 8080
+          timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2000Mi
+          requests:
+            cpu: 500m
+            memory: 1000Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+  test: false
+  triggers:
+  - type: ConfigChange

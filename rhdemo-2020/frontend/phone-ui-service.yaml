@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: phone-ui
+  name: phone-ui
+spec:
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: phone-ui
